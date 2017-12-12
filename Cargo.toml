@@ -1,0 +1,22 @@
+[package]
+name = "pwasm-ethereum"
+version = "0.1.0"
+authors = ["NikVolf <nikvolf@gmail.com>"]
+
+[dependencies]
+pwasm-std = "0.2"
+
+[dependencies.bigint]
+version = "4"
+default-features = false
+
+[dependencies.byteorder]
+version = "1"
+default-features = false
+
+[dependencies.parity-hash]
+version = "1"
+default-features = false
+
+[features]
+std = ["pwasm-std/std"]
