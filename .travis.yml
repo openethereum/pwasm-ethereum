@@ -1,2 +1,3 @@
-languages:
-  -rust
+language: rust
+rust:
+- nightly
