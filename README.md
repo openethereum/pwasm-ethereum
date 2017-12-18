@@ -8,7 +8,7 @@ Collection of externs to interact with ethereum-like network.
 
 # License
 
-`pwasm-std` is primarily distributed under the terms of both the MIT
+`pwasm-ethereum` is primarily distributed under the terms of both the MIT
 license and the Apache License (Version 2.0), at your choice.
 
 See LICENSE-APACHE, and LICENSE-MIT for details.
