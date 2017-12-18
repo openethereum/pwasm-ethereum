@@ -2,7 +2,7 @@
 
 Collection of externs to interact with ethereum-like network.
 
-[![Build Status](https://travis-ci.org/nikvolf/pwasm-ethereum.svg?branch=master)](https://travis-ci.org/nikvolf/pwasm-ethereum)
+[![Build Status](https://travis-ci.org/NikVolf/pwasm-ethereum.svg?branch=master)](https://travis-ci.org/NikVolf/pwasm-ethereum)
 
 [Documentation](https://nikvolf.github.io/pwasm-ethereum/pwasm_ethereum/)
 
