@@ -3,6 +3,9 @@ name = "pwasm-ethereum"
 version = "0.1.0"
 authors = ["NikVolf <nikvolf@gmail.com>"]
 
+[build-dependencies]
+parity-hash = { version = "1", default-features = false }
+
 [dependencies]
 pwasm-std = "0.2"
 
@@ -19,4 +22,4 @@ version = "1"
 default-features = false
 
 [features]
-std = ["pwasm-std/std"]
+std = ["pwasm-std/std", "parity-hash/std", "bigint/std", "byteorder/std"]
