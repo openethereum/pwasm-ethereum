@@ -1,7 +1,6 @@
 //! Storage extensions for pwasm-ethereum.
 //! Storage api is a key-value storage where both key and value are 32 bytes in len
 
-
 use hash::H256;
 
 #[cfg_attr(not(feature="std"), link(name = "env"))]
