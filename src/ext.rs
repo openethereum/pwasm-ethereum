@@ -16,6 +16,7 @@ mod external {
 		/// Direct/classic call.
 		/// Correspond to "CALL" opcode in EVM
 		pub fn ccall(
+			gas: i64,
 			address: *const u8,
 			val_ptr: *const u8,
 			input_ptr: *const u8,
@@ -27,6 +28,7 @@ mod external {
 		/// Delegate call.
 		/// Corresponds to "CALLCODE" opcode in EVM
 		pub fn dcall(
+			gas: i64,
 			address: *const u8,
 			input_ptr: *const u8,
 			input_len: u32,
@@ -37,6 +39,7 @@ mod external {
 		/// Static call.
 		/// Corresponds to "STACICCALL" opcode in EVM
 		pub fn scall(
+			gas: i64,
 			address: *const u8,
 			input_ptr: *const u8,
 			input_len: u32,
@@ -110,11 +113,11 @@ pub fn create(endowment: U256, code: &[u8]) -> Result<Address, Error> {
 }
 
 /// Message-call into an account.
-pub fn call(address: &Address, value: U256, input: &[u8], result: &mut [u8]) -> Result<(), Error> {
+pub fn call(gas: u64, address: &Address, value: U256, input: &[u8], result: &mut [u8]) -> Result<(), Error> {
 	let mut value_arr = [0u8; 32];
 	value.to_big_endian(&mut value_arr);
 	unsafe {
-		match external::ccall(address.as_ptr(), value_arr.as_ptr(), input.as_ptr(), input.len() as u32, result.as_mut_ptr(), result.len() as u32) {
+		match external::ccall(gas as i64, address.as_ptr(), value_arr.as_ptr(), input.as_ptr(), input.len() as u32, result.as_mut_ptr(), result.len() as u32) {
 			0 => Ok(()),
 			_ => Err(Error),
 		}
@@ -127,9 +130,9 @@ pub fn call(address: &Address, value: U256, input: &[u8], result: &mut [u8]) -> 
 /// different code (i.e. like `DELEGATECALL` EVM instruction).
 ///
 /// [`call`]: fn.call.html
-pub fn call_code(address: &Address, input: &[u8], result: &mut [u8]) -> Result<(), Error> {
+pub fn call_code(gas: u64, address: &Address, input: &[u8], result: &mut [u8]) -> Result<(), Error> {
 	unsafe {
-		match external::dcall(address.as_ptr(), input.as_ptr(), input.len() as u32, result.as_mut_ptr(), result.len() as u32) {
+		match external::dcall(gas as i64, address.as_ptr(), input.as_ptr(), input.len() as u32, result.as_mut_ptr(), result.len() as u32) {
 			0 => Ok(()),
 			_ => Err(Error),
 		}
@@ -139,9 +142,9 @@ pub fn call_code(address: &Address, input: &[u8], result: &mut [u8]) -> Result<(
 /// Like [`call`], but this call and any of it's subcalls are disallowed to modify any storage.
 ///
 /// [`call`]: fn.call.html
-pub fn static_call(address: &Address, input: &[u8], result: &mut [u8]) -> Result<(), Error> {
+pub fn static_call(gas: u64, address: &Address, input: &[u8], result: &mut [u8]) -> Result<(), Error> {
 	unsafe {
-		match external::scall(address.as_ptr(), input.as_ptr(), input.len() as u32, result.as_mut_ptr(), result.len() as u32) {
+		match external::scall(gas as i64, address.as_ptr(), input.as_ptr(), input.len() as u32, result.as_mut_ptr(), result.len() as u32) {
 			0 => Ok(()),
 			_ => Err(Error),
 		}
