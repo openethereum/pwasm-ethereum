@@ -251,7 +251,7 @@ pub fn input() -> pwasm_std::Vec<u8> {
 	let len = unsafe { external::input_length() };
 
 	match len {
-		0 => Vec::new(),
+		0 => pwasm_std::Vec::new(),
 		non_zero => {
 			let mut data = pwasm_std::Vec::with_capacity(non_zero as usize);
 			unsafe { external::fetch_input(data.as_mut_ptr()); }
