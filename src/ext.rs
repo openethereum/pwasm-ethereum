@@ -2,6 +2,7 @@
 
 use hash::{H256, Address};
 use bigint::U256;
+use pwasm_std;
 
 /// Generic wasm error
 #[derive(Debug)]
@@ -77,6 +78,12 @@ mod external {
 		pub fn create(endowment: *const u8, code_ptr: *const u8, code_len: u32, result_ptr: *mut u8) -> i32;
 
 		pub fn suicide(refund: *const u8) -> !;
+
+		pub fn ret(ptr: *const u8, len: u32);
+
+		pub fn input_length() -> u32;
+
+		pub fn write_input(dst: *mut u8);
 	}
 }
 
@@ -237,4 +244,14 @@ pub fn address() -> Address {
 /// If `topics` contains more than 4 elements then this function will trap.
 pub fn log(topics: &[H256], data: &[u8]) {
 	unsafe { external::elog(topics.as_ptr() as *const u8, topics.len() as u32, data.as_ptr(), data.len() as u32); }
+}
+
+pub fn input() -> pwasm_std::Vec<u8> {
+	let mut data = pwasm_std::Vec::with_capacity(unsafe { external::input_length() } as usize);
+	unsafe { external::write_input(data.as_mut_ptr()); }
+	data
+}
+
+pub fn ret(data: &[u8]) {
+	unsafe { external::ret(data.as_ptr(), data.len() as u32); }
 }
