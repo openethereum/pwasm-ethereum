@@ -246,12 +246,14 @@ pub fn log(topics: &[H256], data: &[u8]) {
 	unsafe { external::elog(topics.as_ptr() as *const u8, topics.len() as u32, data.as_ptr(), data.len() as u32); }
 }
 
+/// Allocates and requests call arguments (input) from the runtime
 pub fn input() -> pwasm_std::Vec<u8> {
 	let mut data = pwasm_std::Vec::with_capacity(unsafe { external::input_length() } as usize);
 	unsafe { external::write_input(data.as_mut_ptr()); }
 	data
 }
 
+/// Returns data to the runtme (multiple returns override)
 pub fn ret(data: &[u8]) {
 	unsafe { external::ret(data.as_ptr(), data.len() as u32); }
 }
