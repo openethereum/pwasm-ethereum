@@ -83,7 +83,7 @@ mod external {
 
 		pub fn input_length() -> u32;
 
-		pub fn write_input(dst: *mut u8);
+		pub fn fetch_input(dst: *mut u8);
 	}
 }
 
@@ -249,7 +249,7 @@ pub fn log(topics: &[H256], data: &[u8]) {
 /// Allocates and requests call arguments (input) from the runtime
 pub fn input() -> pwasm_std::Vec<u8> {
 	let mut data = pwasm_std::Vec::with_capacity(unsafe { external::input_length() } as usize);
-	unsafe { external::write_input(data.as_mut_ptr()); }
+	unsafe { external::fetch_input(data.as_mut_ptr()); }
 	data
 }
 
