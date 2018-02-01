@@ -248,9 +248,16 @@ pub fn log(topics: &[H256], data: &[u8]) {
 
 /// Allocates and requests call arguments (input) from the runtime
 pub fn input() -> pwasm_std::Vec<u8> {
-	let mut data = pwasm_std::Vec::with_capacity(unsafe { external::input_length() } as usize);
-	unsafe { external::fetch_input(data.as_mut_ptr()); }
-	data
+	let len = unsafe { external::input_length() };
+
+	match len {
+		0 => Vec::new(),
+		non_zero => {
+			let mut data = pwasm_std::Vec::with_capacity(non_zero as usize);
+			unsafe { external::fetch_input(data.as_mut_ptr()); }
+			data
+		}
+	}
 }
 
 /// Returns data to the runtme (multiple returns override)
