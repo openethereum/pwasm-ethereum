@@ -181,7 +181,7 @@ pub fn block_hash(block_number: u64) -> H256 {
 	res
 }
 
-/// Get the block’s beneficiary address (i.e miner's account address)
+/// Get the current block’s beneficiary address (the current miner account address)
 pub fn coinbase() -> Address {
 	unsafe { fetch_address(|x| external::coinbase(x) ) }
 }
