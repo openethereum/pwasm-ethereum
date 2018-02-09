@@ -252,7 +252,9 @@ pub fn log(topics: &[H256], data: &[u8]) {
 	unsafe { external::elog(topics.as_ptr() as *const u8, topics.len() as u32, data.as_ptr(), data.len() as u32); }
 }
 
-/// Allocates and requests [`call`] arguments (input) from the runtime
+/// Allocates and requests [`call`] arguments (input)
+///
+/// Input data comes either with external transaction or from [`call`] input value.
 pub fn input() -> pwasm_std::Vec<u8> {
 	let len = unsafe { external::input_length() };
 
