@@ -126,12 +126,12 @@ pub fn create(endowment: U256, code: &[u8]) -> Result<Address, Error> {
 ///	* `gas`- a gas limit for a call. A call execution will halt if call exceed this amount
 /// * `address` - an address of contract to send a call
 /// * `value` - a value in Wei to send with a call
-/// * `input` - an data to send with a call
+/// * `input` - a data to send with a call
 /// * `result` - a mutable reference to be filled with a result data
 ///
 ///	# Returns:
-/// Call is succeed if it returns Result::Ok(())
-/// If call returns Result::Err(Error) it means tha call was failed due to execution halting
+/// Call is succeed if it returns `Result::Ok(())`
+/// If call returns `Result::Err(Error)` it means tha call was failed due to execution halting
 
 pub fn call(gas: u64, address: &Address, value: U256, input: &[u8], result: &mut [u8]) -> Result<(), Error> {
 	let mut value_arr = [0u8; 32];
@@ -218,6 +218,7 @@ pub fn gas_limit() -> U256 {
 /// Get caller address
 ///
 /// This is the address of the account that is directly responsible for this execution.
+/// Use [`origin`] to get an address of external account - an original initiator of a transaction
 pub fn sender() -> Address {
 	unsafe { fetch_address(|x| external::sender(x) ) }
 }
@@ -251,7 +252,7 @@ pub fn log(topics: &[H256], data: &[u8]) {
 	unsafe { external::elog(topics.as_ptr() as *const u8, topics.len() as u32, data.as_ptr(), data.len() as u32); }
 }
 
-/// Allocates and requests call arguments (input) from the runtime
+/// Allocates and requests [`call`] arguments (input) from the runtime
 pub fn input() -> pwasm_std::Vec<u8> {
 	let len = unsafe { external::input_length() };
 
@@ -268,7 +269,10 @@ pub fn input() -> pwasm_std::Vec<u8> {
 	}
 }
 
-/// Returns data to the runtme (multiple returns override)
+/// Sets a [`call`] return value
+///
+/// Multiple `ret` calls are allowed and each `ret` call will override preveous `ret` call
+///
 pub fn ret(data: &[u8]) {
 	unsafe { external::ret(data.as_ptr(), data.len() as u32); }
 }
