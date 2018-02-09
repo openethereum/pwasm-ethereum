@@ -50,7 +50,6 @@ mod external {
 
 		// enviromental blockchain functions (runtume might not provide all of these!)
 
-		/// Block hash of the specific block
 		pub fn blockhash(number: i64, dest: *mut u8);
 
 		pub fn balance(address: *const u8, dest: *mut u8);
@@ -87,19 +86,21 @@ mod external {
 	}
 }
 
-/// Halt execution and register account for deletion.
+/// Halt execution and register account for deletion
 ///
 /// Value of the current account will be tranfered to `refund` address.
 pub fn suicide(refund: &Address) -> ! {
 	unsafe { external::suicide(refund.as_ptr()); }
 }
 
-/// Returns balance of the given address.
+/// Get balance of the given account
+///
+/// Every account is exists from contracts point, so if account is not registered in the chain it consedered as an account with balance=0
 pub fn balance(address: &Address) -> U256 {
 	unsafe { fetch_u256(|x| external::balance(address.as_ptr(), x) ) }
 }
 
-/// Create a new account with the given code.
+/// Create a new account with the given code
 ///
 /// # Errors
 ///
@@ -119,19 +120,32 @@ pub fn create(endowment: U256, code: &[u8]) -> Result<Address, Error> {
 	}
 }
 
-/// Message-call into an account.
+///	Message-call into an account
+///
+///	# Arguments:
+///	* `gas`- a gas limit for a call. A call execution will halt if call exceed this amount
+/// * `address` - an address of contract to send a call
+/// * `value` - a value in Wei to send with a call
+/// * `input` - a data to send with a call
+/// * `result` - a mutable reference to be filled with a result data
+///
+///	# Returns:
+/// Call is succeed if it returns `Result::Ok(())`
+/// If call returns `Result::Err(Error)` it means tha call was failed due to execution halting
+
 pub fn call(gas: u64, address: &Address, value: U256, input: &[u8], result: &mut [u8]) -> Result<(), Error> {
 	let mut value_arr = [0u8; 32];
 	value.to_big_endian(&mut value_arr);
 	unsafe {
-		match external::ccall(gas as i64, address.as_ptr(), value_arr.as_ptr(), input.as_ptr(), input.len() as u32, result.as_mut_ptr(), result.len() as u32) {
-			0 => Ok(()),
-			_ => Err(Error),
+		match external::ccall(gas as i64, address.as_ptr(), value_arr.as_ptr(), input.as_ptr(), input.len() as u32,
+			result.as_mut_ptr(), result.len() as u32) {
+				0 => Ok(()),
+				_ => Err(Error),
 		}
 	}
 }
 
-/// Like [`call`], but with code at the given `address`.
+/// Like [`call`], but with code at the given `address`
 ///
 /// Effectively this function is like calling current account but with
 /// different code (i.e. like `DELEGATECALL` EVM instruction).
@@ -146,7 +160,7 @@ pub fn call_code(gas: u64, address: &Address, input: &[u8], result: &mut [u8]) -
 	}
 }
 
-/// Like [`call`], but this call and any of it's subcalls are disallowed to modify any storage.
+/// Like [`call`], but this call and any of it's subcalls are disallowed to modify any storage (will return `Err(Error)` in this case)
 ///
 /// [`call`]: fn.call.html
 pub fn static_call(gas: u64, address: &Address, input: &[u8], result: &mut [u8]) -> Result<(), Error> {
@@ -158,7 +172,10 @@ pub fn static_call(gas: u64, address: &Address, input: &[u8], result: &mut [u8])
 	}
 }
 
-/// Returns the hash of one of the 256 most recent complete blocks.
+/// Returns hash of the given block or H256::zero()
+///
+/// Only works for 256 most recent blocks excluding current
+/// Returns H256::zero() in case of failure
 pub fn block_hash(block_number: u64) -> H256 {
 	let mut res = H256::zero();
 	unsafe {
@@ -167,24 +184,12 @@ pub fn block_hash(block_number: u64) -> H256 {
 	res
 }
 
-unsafe fn fetch_address<F>(f: F) -> Address where F: Fn(*mut u8) {
-	let mut res = Address::zero();
-	f(res.as_mut_ptr());
-	res
-}
-
-unsafe fn fetch_u256<F>(f: F) -> U256 where F: Fn(*mut u8) {
-	let mut res = [0u8; 32];
-	f(res.as_mut_ptr());
-	U256::from_big_endian(&res)
-}
-
-/// Get the block’s beneficiary address (i.e miner's account address).
+/// Get the current block’s beneficiary address (the current miner account address)
 pub fn coinbase() -> Address {
 	unsafe { fetch_address(|x| external::coinbase(x) ) }
 }
 
-/// Get the block's timestamp.
+/// Get the block's timestamp
 ///
 /// It can be viewed as an output of Unix's `time()` function at
 /// current block's inception.
@@ -192,12 +197,12 @@ pub fn timestamp() -> u64 {
 	unsafe { external::timestamp() as u64 }
 }
 
-/// Get the block's number.
+/// Get the block's number
 ///
 /// This value represents number of ancestor blocks.
 /// The genesis block has a number of zero.
 pub fn block_number() -> u64 {
-	unsafe { external::blocknumber()  as u64 }
+	unsafe { external::blocknumber() as u64 }
 }
 
 /// Get the block's difficulty.
@@ -210,17 +215,18 @@ pub fn gas_limit() -> U256 {
 	unsafe { fetch_u256(|x| external::gaslimit(x) ) }
 }
 
-/// Get caller address.
+/// Get caller address
 ///
 /// This is the address of the account that is directly responsible for this execution.
+/// Use [`origin`] to get an address of external account - an original initiator of a transaction
 pub fn sender() -> Address {
 	unsafe { fetch_address(|x| external::sender(x) ) }
 }
 
-/// Get execution origination address.
+/// Get execution origination address
 ///
 /// This is the sender of original transaction.
-/// It is never an account with non-empty associated code.
+/// It could be only external account, not a contract
 pub fn origin() -> Address {
 	unsafe { fetch_address(|x| external::origin(x) ) }
 }
@@ -230,7 +236,7 @@ pub fn value() -> U256 {
 	unsafe { fetch_u256(|x| external::value(x) ) }
 }
 
-/// Get address of currently executing account.
+/// Get address of currently executing account
 pub fn address() -> Address {
 	unsafe { fetch_address(|x| external::address(x) ) }
 }
@@ -246,7 +252,9 @@ pub fn log(topics: &[H256], data: &[u8]) {
 	unsafe { external::elog(topics.as_ptr() as *const u8, topics.len() as u32, data.as_ptr(), data.len() as u32); }
 }
 
-/// Allocates and requests call arguments (input) from the runtime
+/// Allocates and requests [`call`] arguments (input)
+///
+/// Input data comes either with external transaction or from [`call`] input value.
 pub fn input() -> pwasm_std::Vec<u8> {
 	let len = unsafe { external::input_length() };
 
@@ -263,7 +271,22 @@ pub fn input() -> pwasm_std::Vec<u8> {
 	}
 }
 
-/// Returns data to the runtme (multiple returns override)
+/// Sets a [`call`] return value
+///
+/// Multiple `ret` calls are allowed and each `ret` call will override preveous `ret` call
+///
 pub fn ret(data: &[u8]) {
 	unsafe { external::ret(data.as_ptr(), data.len() as u32); }
+}
+
+unsafe fn fetch_address<F>(f: F) -> Address where F: Fn(*mut u8) {
+	let mut res = Address::zero();
+	f(res.as_mut_ptr());
+	res
+}
+
+unsafe fn fetch_u256<F>(f: F) -> U256 where F: Fn(*mut u8) {
+	let mut res = [0u8; 32];
+	f(res.as_mut_ptr());
+	U256::from_big_endian(&res)
 }
