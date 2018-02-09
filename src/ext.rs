@@ -172,7 +172,10 @@ pub fn static_call(gas: u64, address: &Address, input: &[u8], result: &mut [u8])
 	}
 }
 
-/// Returns the hash of one of the 256 most recent complete blocks
+/// Returns hash of the given block or H256::zero()
+///
+/// Only works for 256 most recent blocks excluding current
+/// Returns H256::zero() in case of failure
 pub fn block_hash(block_number: u64) -> H256 {
 	let mut res = H256::zero();
 	unsafe {
