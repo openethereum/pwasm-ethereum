@@ -94,6 +94,8 @@ pub fn suicide(refund: &Address) -> ! {
 }
 
 /// Get balance of the given account
+///
+/// Every account is exists from contracts point, so if account is not registered in the chain it consedered as an account with balance=0
 pub fn balance(address: &Address) -> U256 {
 	unsafe { fetch_u256(|x| external::balance(address.as_ptr(), x) ) }
 }
@@ -118,9 +120,19 @@ pub fn create(endowment: U256, code: &[u8]) -> Result<Address, Error> {
 	}
 }
 
-/// Message-call into an account
+///	Message-call into an account
 ///
-/// Calls
+///	# Arguments:
+///	* `gas`- a gas limit for a call. A call execution will halt if call exceed this amount
+/// * `address` - an address of contract to send a call
+/// * `value` - a value in Wei to send with a call
+/// * `input` - an data to send with a call
+/// * `result` - a mutable reference to be filled with a result data
+///
+///	# Returns:
+/// Call is succeed if it returns Result::Ok(())
+/// If call returns Result::Err(Error) it means tha call was failed due to execution halting
+
 pub fn call(gas: u64, address: &Address, value: U256, input: &[u8], result: &mut [u8]) -> Result<(), Error> {
 	let mut value_arr = [0u8; 32];
 	value.to_big_endian(&mut value_arr);
@@ -148,7 +160,7 @@ pub fn call_code(gas: u64, address: &Address, input: &[u8], result: &mut [u8]) -
 	}
 }
 
-/// Like [`call`], but this call and any of it's subcalls are disallowed to modify any storage
+/// Like [`call`], but this call and any of it's subcalls are disallowed to modify any storage (will return `Err(Error)` in this case)
 ///
 /// [`call`]: fn.call.html
 pub fn static_call(gas: u64, address: &Address, input: &[u8], result: &mut [u8]) -> Result<(), Error> {
