@@ -7,7 +7,7 @@ authors = ["NikVolf <nikvolf@gmail.com>"]
 parity-hash = { version = "1", default-features = false }
 
 [dependencies]
-pwasm-std = "0.3"
+pwasm-std = "0.4"
 
 [dependencies.bigint]
 version = "4"
