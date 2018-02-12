@@ -2,6 +2,14 @@
 name = "pwasm-ethereum"
 version = "0.1.0"
 authors = ["NikVolf <nikvolf@gmail.com>"]
+license = "MIT/Apache-2.0"
+readme = "README.md"
+repository = "https://github.com/paritytech/pwasm-ethereum"
+homepage = "https://github.com/paritytech/pwasm-ethereum"
+documentation = "https://paritytech.github.io/pwasm-ethereum/pwasm_ethereum/"
+description = "Externs library to interact with Ethereum-like network"
+keywords = ["wasm", "parity", "ethereum", "blockchain"]
+categories = ["no-std", "embedded", "blockchain" "wasm"]
 
 [build-dependencies]
 parity-hash = { version = "1", default-features = false }
