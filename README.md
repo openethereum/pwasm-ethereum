@@ -2,9 +2,9 @@
 
 Collection of externs to interact with ethereum-like network.
 
-[![Build Status](https://travis-ci.org/NikVolf/pwasm-ethereum.svg?branch=master)](https://travis-ci.org/NikVolf/pwasm-ethereum)
+[![Build Status](https://travis-ci.org/paritytech/pwasm-ethereum.svg?branch=master)](https://travis-ci.org/paritytech/pwasm-ethereum)
 
-[Documentation](https://nikvolf.github.io/pwasm-ethereum/pwasm_ethereum/)
+[Documentation](https://paritytech.github.io/pwasm-ethereum/pwasm_ethereum/)
 
 # License
 
