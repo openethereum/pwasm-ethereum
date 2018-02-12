@@ -9,13 +9,13 @@ homepage = "https://github.com/paritytech/pwasm-ethereum"
 documentation = "https://paritytech.github.io/pwasm-ethereum/pwasm_ethereum/"
 description = "Externs library to interact with Ethereum-like network"
 keywords = ["wasm", "parity", "ethereum", "blockchain"]
-categories = ["no-std", "embedded", "blockchain" "wasm"]
+categories = ["no-std", "embedded", "blockchain", "wasm"]
 
 [build-dependencies]
 parity-hash = { version = "1", default-features = false }
 
 [dependencies]
-pwasm-std = "0.4"
+pwasm-std = "0.5"
 
 [dependencies.bigint]
 version = "4"
