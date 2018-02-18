@@ -15,7 +15,7 @@ mod external {
 		// Various call variants
 
 		/// Direct/classic call.
-		/// Correspond to "CALL" opcode in EVM
+		/// Corresponds to "CALL" opcode in EVM
 		pub fn ccall(
 			gas: i64,
 			address: *const u8,
@@ -48,7 +48,7 @@ mod external {
 			result_len: u32,
 		) -> i32;
 
-		// enviromental blockchain functions (runtume might not provide all of these!)
+		// environmental blockchain functions (runtime might not provide all of these!)
 
 		pub fn blockhash(number: i64, dest: *mut u8);
 
@@ -95,7 +95,7 @@ pub fn suicide(refund: &Address) -> ! {
 
 /// Get balance of the given account
 ///
-/// Every account is exists from contracts point, so if account is not registered in the chain it consedered as an account with balance=0
+/// If an account is not registered in the chain yet, it is considered as an account with balance=0
 pub fn balance(address: &Address) -> U256 {
 	unsafe { fetch_u256(|x| external::balance(address.as_ptr(), x) ) }
 }
