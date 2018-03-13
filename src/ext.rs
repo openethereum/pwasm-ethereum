@@ -273,7 +273,7 @@ pub fn input() -> pwasm_std::Vec<u8> {
 
 /// Sets a [`call`] return value
 ///
-/// Multiple `ret` calls are allowed and each `ret` call will override preveous `ret` call
+/// Pass return data to the runtime. Runtime SHOULD trap the execution.
 ///
 pub fn ret(data: &[u8]) -> ! {
 	unsafe { external::ret(data.as_ptr(), data.len() as u32); }
