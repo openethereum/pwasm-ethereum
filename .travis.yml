@@ -1,8 +1,11 @@
 language: rust
 rust:
 - nightly
+install:
+- rustup target add wasm32-unknown-unknown
 script:
-- cargo test --features std
+- cargo check --features std
+- cargo check --target wasm32-unknown-unknown
 after_success: |-
   [ $TRAVIS_BRANCH = master ] &&
   [ $TRAVIS_PULL_REQUEST = false ] &&
