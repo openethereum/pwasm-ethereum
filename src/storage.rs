@@ -3,7 +3,6 @@
 
 use hash::H256;
 
-#[cfg_attr(not(feature="std"), link(name = "env"))]
 extern "C" {
 	fn storage_read(key: *const u8, dst: *mut u8);
 	fn storage_write(key: *const u8, src: *const u8);
