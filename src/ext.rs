@@ -78,7 +78,7 @@ mod external {
 
 		pub fn suicide(refund: *const u8) -> !;
 
-		pub fn ret(ptr: *const u8, len: u32);
+		pub fn ret(ptr: *const u8, len: u32) -> !;
 
 		pub fn input_length() -> u32;
 
@@ -273,9 +273,9 @@ pub fn input() -> pwasm_std::Vec<u8> {
 
 /// Sets a [`call`] return value
 ///
-/// Multiple `ret` calls are allowed and each `ret` call will override preveous `ret` call
+/// Pass return data to the runtime. Runtime SHOULD trap the execution.
 ///
-pub fn ret(data: &[u8]) {
+pub fn ret(data: &[u8]) -> ! {
 	unsafe { external::ret(data.as_ptr(), data.len() as u32); }
 }
 
