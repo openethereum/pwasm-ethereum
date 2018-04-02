@@ -6,6 +6,8 @@ Collection of externs to interact with ethereum-like network.
 
 [Documentation](https://paritytech.github.io/pwasm-ethereum/pwasm_ethereum/)
 
+[Parity Wasm Tutorial](https://github.com/paritytech/pwasm-tutorial) - on how to write contracts in Webassembly for Kovan and other Wasm-enabled networks.
+
 # License
 
 `pwasm-ethereum` is primarily distributed under the terms of both the MIT
