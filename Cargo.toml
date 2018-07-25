@@ -15,7 +15,7 @@ categories = ["no-std", "embedded"]
 parity-hash = { version = "1", default-features = false }
 
 [dependencies]
-pwasm-std = "0.9"
+pwasm-std = "0.10"
 
 [dependencies.bigint]
 version = "4"
