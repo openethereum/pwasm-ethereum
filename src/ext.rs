@@ -70,12 +70,28 @@ mod external {
 
 		pub fn origin(dest: *mut u8);
 
-		pub fn elog(topic_ptr: *const u8, topic_count: u32, data_ptr: *const u8, data_len: u32);
+		pub fn elog(
+			topic_ptr: *const u8,
+			topic_count: u32,
+			data_ptr: *const u8,
+			data_len: u32
+		);
 
-		pub fn create(endowment: *const u8, code_ptr: *const u8, code_len: u32, result_ptr: *mut u8) -> i32;
+		pub fn create(
+			endowment: *const u8,
+			code_ptr: *const u8,
+			code_len: u32,
+			result_ptr: *mut u8
+		) -> i32;
 
 		#[cfg(feature = "kip4")]
-		pub fn create2(endowment: *const u8, salt: *const u8, code_ptr: *const u8, code_len: u32, result_ptr: *mut u8) -> i32;
+		pub fn create2(
+			endowment: *const u8,
+			salt: *const u8,
+			code_ptr: *const u8,
+			code_len: u32,
+			result_ptr: *mut u8
+		) -> i32;
 
 		pub fn suicide(refund: *const u8) -> !;
 
