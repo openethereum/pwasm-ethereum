@@ -70,9 +70,28 @@ mod external {
 
 		pub fn origin(dest: *mut u8);
 
-		pub fn elog(topic_ptr: *const u8, topic_count: u32, data_ptr: *const u8, data_len: u32);
+		pub fn elog(
+			topic_ptr: *const u8,
+			topic_count: u32,
+			data_ptr: *const u8,
+			data_len: u32
+		);
 
-		pub fn create(endowment: *const u8, code_ptr: *const u8, code_len: u32, result_ptr: *mut u8) -> i32;
+		pub fn create(
+			endowment: *const u8,
+			code_ptr: *const u8,
+			code_len: u32,
+			result_ptr: *mut u8
+		) -> i32;
+
+		#[cfg(feature = "kip4")]
+		pub fn create2(
+			endowment: *const u8,
+			salt: *const u8,
+			code_ptr: *const u8,
+			code_len: u32,
+			result_ptr: *mut u8
+		) -> i32;
 
 		pub fn suicide(refund: *const u8) -> !;
 
@@ -111,6 +130,27 @@ pub fn create(endowment: U256, code: &[u8]) -> Result<Address, Error> {
 	let mut result = Address::new();
 	unsafe {
 		if external::create(endowment_arr.as_ptr(), code.as_ptr(), code.len() as u32, (&mut result).as_mut_ptr()) == 0 {
+			Ok(result)
+		} else {
+			Err(Error)
+		}
+	}
+}
+
+#[cfg(feature = "kip4")]
+/// Create a new account with the given code and salt, requires KIP-4.
+///
+/// # Errors
+///
+/// Returns [`Error`] in case contract constructor failed.
+///
+/// [`Error`]: struct.Error.html
+pub fn create2(endowment: U256, salt: H256, code: &[u8]) -> Result<Address, Error> {
+	let mut endowment_arr = [0u8; 32];
+	endowment.to_big_endian(&mut endowment_arr);
+	let mut result = Address::new();
+	unsafe {
+		if external::create2(endowment_arr.as_ptr(), salt.as_ptr(), code.as_ptr(), code.len() as u32, (&mut result).as_mut_ptr()) == 0 {
 			Ok(result)
 		} else {
 			Err(Error)

@@ -31,4 +31,5 @@ default-features = false
 
 [features]
 default = []
+kip4 = []
 std = ["pwasm-std/std", "parity-hash/std", "bigint/std", "byteorder/std"]
