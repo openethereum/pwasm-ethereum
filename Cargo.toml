@@ -12,13 +12,13 @@ keywords = ["wasm", "parity", "ethereum", "blockchain"]
 categories = ["no-std", "embedded"]
 
 [build-dependencies]
-parity-hash = { version = "1", default-features = false }
+parity-hash = { version = "1.2.2", default-features = false }
 
 [dependencies]
 pwasm-std = "0.10"
 
-[dependencies.bigint]
-version = "4"
+[dependencies.uint]
+version = "0.3"
 default-features = false
 
 [dependencies.byteorder]
@@ -26,10 +26,10 @@ version = "1"
 default-features = false
 
 [dependencies.parity-hash]
-version = "1"
+version = "1.2.2"
 default-features = false
 
 [features]
 default = []
 kip4 = []
-std = ["pwasm-std/std", "parity-hash/std", "bigint/std", "byteorder/std"]
+std = ["pwasm-std/std", "parity-hash/std", "uint/std", "byteorder/std"]
