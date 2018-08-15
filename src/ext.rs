@@ -62,6 +62,8 @@ mod external {
 
 		pub fn gaslimit(dest: *mut u8);
 
+		pub fn gasleft() -> i64;
+
 		pub fn sender(dest: *mut u8);
 
 		pub fn address(dest: *mut u8);
@@ -251,6 +253,11 @@ pub fn difficulty() -> U256 {
 /// Get the block's gas limit.
 pub fn gas_limit() -> U256 {
 	unsafe { fetch_u256(|x| external::gaslimit(x) ) }
+}
+
+/// Get amount of gas left.
+pub fn gas_left() -> u64 {
+	unsafe { external::gasleft() as u64 }
 }
 
 /// Get caller address
