@@ -1,7 +1,7 @@
 //! Safe wrapper around externalities invokes.
 
 use hash::{H256, Address};
-use bigint::U256;
+use uint::U256;
 use pwasm_std;
 
 /// Generic wasm error
