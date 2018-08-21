@@ -30,7 +30,7 @@ version = "1.2.2"
 default-features = false
 
 [features]
-default = ["kip6"]
+default = []
 kip4 = []
 kip6 = []
-std = ["kip6", "pwasm-std/std", "parity-hash/std", "uint/std", "byteorder/std"]
+std = ["pwasm-std/std", "parity-hash/std", "uint/std", "byteorder/std"]
