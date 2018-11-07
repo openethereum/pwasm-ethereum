@@ -1,7 +1,7 @@
 //! Storage extensions for pwasm-ethereum.
 //! Storage api is a key-value storage where both key and value are 32 bytes in len
 
-use hash::H256;
+use pwasm_std::types::H256;
 
 extern "C" {
 	fn storage_read(key: *const u8, dst: *mut u8);

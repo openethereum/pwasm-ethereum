@@ -1,8 +1,11 @@
 //! Safe wrapper around externalities invokes.
 
-use hash::{H256, Address};
-use uint::U256;
-use pwasm_std;
+use pwasm_std::{
+	self,
+	types::{H160, H256, U256}
+};
+
+type Address = H160;
 
 /// Generic wasm error
 #[derive(Debug)]
@@ -130,9 +133,14 @@ pub fn balance(address: &Address) -> U256 {
 pub fn create(endowment: U256, code: &[u8]) -> Result<Address, Error> {
 	let mut endowment_arr = [0u8; 32];
 	endowment.to_big_endian(&mut endowment_arr);
-	let mut result = Address::new();
+	let mut result = Address::from(H160::zero());
 	unsafe {
-		if external::create(endowment_arr.as_ptr(), code.as_ptr(), code.len() as u32, (&mut result).as_mut_ptr()) == 0 {
+		if external::create(
+			endowment_arr.as_ptr(),
+			code.as_ptr(),
+			code.len() as u32,
+			(&mut result).as_mut_ptr()
+		) == 0 {
 			Ok(result)
 		} else {
 			Err(Error)
@@ -153,7 +161,13 @@ pub fn create2(endowment: U256, salt: H256, code: &[u8]) -> Result<Address, Erro
 	endowment.to_big_endian(&mut endowment_arr);
 	let mut result = Address::new();
 	unsafe {
-		if external::create2(endowment_arr.as_ptr(), salt.as_ptr(), code.as_ptr(), code.len() as u32, (&mut result).as_mut_ptr()) == 0 {
+		if external::create2(
+			endowment_arr.as_ptr(),
+			salt.as_ptr(),
+			code.as_ptr(),
+			code.len() as u32,
+			(&mut result).as_mut_ptr()
+		) == 0 {
 			Ok(result)
 		} else {
 			Err(Error)
@@ -178,10 +192,16 @@ pub fn call(gas: u64, address: &Address, value: U256, input: &[u8], result: &mut
 	let mut value_arr = [0u8; 32];
 	value.to_big_endian(&mut value_arr);
 	unsafe {
-		match external::ccall(gas as i64, address.as_ptr(), value_arr.as_ptr(), input.as_ptr(), input.len() as u32,
-			result.as_mut_ptr(), result.len() as u32) {
-				0 => Ok(()),
-				_ => Err(Error),
+		match external::ccall(
+			gas as i64,
+			address.as_ptr(),
+			value_arr.as_ptr(),
+			input.as_ptr(),
+			input.len() as u32,
+			result.as_mut_ptr(), result.len() as u32
+		) {
+			0 => Ok(()),
+			_ => Err(Error),
 		}
 	}
 }
@@ -194,7 +214,14 @@ pub fn call(gas: u64, address: &Address, value: U256, input: &[u8], result: &mut
 /// [`call`]: fn.call.html
 pub fn call_code(gas: u64, address: &Address, input: &[u8], result: &mut [u8]) -> Result<(), Error> {
 	unsafe {
-		match external::dcall(gas as i64, address.as_ptr(), input.as_ptr(), input.len() as u32, result.as_mut_ptr(), result.len() as u32) {
+		match external::dcall(
+			gas as i64,
+			address.as_ptr(),
+			input.as_ptr(),
+			input.len() as u32,
+			result.as_mut_ptr(),
+			result.len() as u32
+		) {
 			0 => Ok(()),
 			_ => Err(Error),
 		}
@@ -206,7 +233,14 @@ pub fn call_code(gas: u64, address: &Address, input: &[u8], result: &mut [u8]) -
 /// [`call`]: fn.call.html
 pub fn static_call(gas: u64, address: &Address, input: &[u8], result: &mut [u8]) -> Result<(), Error> {
 	unsafe {
-		match external::scall(gas as i64, address.as_ptr(), input.as_ptr(), input.len() as u32, result.as_mut_ptr(), result.len() as u32) {
+		match external::scall(
+			gas as i64,
+			address.as_ptr(),
+			input.as_ptr(),
+			input.len() as u32,
+			result.as_mut_ptr(),
+			result.len() as u32
+		) {
 			0 => Ok(()),
 			_ => Err(Error),
 		}
@@ -327,7 +361,7 @@ pub fn ret(data: &[u8]) -> ! {
 }
 
 unsafe fn fetch_address<F>(f: F) -> Address where F: Fn(*mut u8) {
-	let mut res = Address::zero();
+	let mut res = Address::from(H160::zero());
 	f(res.as_mut_ptr());
 	res
 }
