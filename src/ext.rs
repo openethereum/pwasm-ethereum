@@ -186,23 +186,24 @@ pub fn create2(endowment: U256, salt: H256, code: &[u8]) -> Result<Address, Erro
 /// * `result` - a mutable reference to be filled with a result data
 ///
 ///	# Returns:
+///
 /// Call is succeed if it returns `Result::Ok(())`
 /// If call returns `Result::Err(Error)` it means tha call was failed due to execution halting
-
 pub fn call(gas: u64, address: &Address, value: U256, input: &[u8], result: &mut [u8]) -> Result<(), Error> {
 	let mut value_arr = [0u8; 32];
 	value.to_big_endian(&mut value_arr);
 	unsafe {
-		match external::ccall(
+		if external::ccall(
 			gas as i64,
 			address.as_ptr(),
 			value_arr.as_ptr(),
 			input.as_ptr(),
 			input.len() as u32,
 			result.as_mut_ptr(), result.len() as u32
-		) {
-			0 => Ok(()),
-			_ => Err(Error),
+		) == 0 {
+			Ok(())
+		} else {
+			Err(Error)
 		}
 	}
 }
@@ -215,16 +216,17 @@ pub fn call(gas: u64, address: &Address, value: U256, input: &[u8], result: &mut
 /// [`call`]: fn.call.html
 pub fn call_code(gas: u64, address: &Address, input: &[u8], result: &mut [u8]) -> Result<(), Error> {
 	unsafe {
-		match external::dcall(
+		if external::dcall(
 			gas as i64,
 			address.as_ptr(),
 			input.as_ptr(),
 			input.len() as u32,
 			result.as_mut_ptr(),
 			result.len() as u32
-		) {
-			0 => Ok(()),
-			_ => Err(Error),
+		) == 0 {
+			Ok(())
+		} else {
+			Err(Error)
 		}
 	}
 }
@@ -236,16 +238,17 @@ pub fn call_code(gas: u64, address: &Address, input: &[u8], result: &mut [u8]) -
 /// [`call`]: fn.call.html
 pub fn static_call(gas: u64, address: &Address, input: &[u8], result: &mut [u8]) -> Result<(), Error> {
 	unsafe {
-		match external::scall(
+		if external::scall(
 			gas as i64,
 			address.as_ptr(),
 			input.as_ptr(),
 			input.len() as u32,
 			result.as_mut_ptr(),
 			result.len() as u32
-		) {
-			0 => Ok(()),
-			_ => Err(Error),
+		) == 0 {
+			Ok(())
+		} else {
+			Err(Error)
 		}
 	}
 }
