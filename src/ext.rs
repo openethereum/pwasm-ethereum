@@ -134,7 +134,7 @@ pub fn balance(address: &Address) -> U256 {
 pub fn create(endowment: U256, code: &[u8]) -> Result<Address, Error> {
 	let mut endowment_arr = [0u8; 32];
 	endowment.to_big_endian(&mut endowment_arr);
-	let mut result = Address::from(H160::zero());
+	let mut result = Address::zero();
 	unsafe {
 		if external::create(
 			endowment_arr.as_ptr(),
@@ -364,7 +364,7 @@ pub fn ret(data: &[u8]) -> ! {
 }
 
 unsafe fn fetch_address<F>(f: F) -> Address where F: Fn(*mut u8) {
-	let mut res = Address::from(H160::zero());
+	let mut res = Address::zero();
 	f(res.as_mut_ptr());
 	res
 }
