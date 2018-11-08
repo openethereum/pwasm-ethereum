@@ -109,16 +109,17 @@ mod external {
 	}
 }
 
-/// Halt execution and register account for deletion
+/// Halt execution and register account for deletion.
 ///
 /// Value of the current account will be tranfered to `refund` address.
 pub fn suicide(refund: &Address) -> ! {
 	unsafe { external::suicide(refund.as_ptr()); }
 }
 
-/// Get balance of the given account
+/// Get balance of the given account.
 ///
-/// If an account is not registered in the chain yet, it is considered as an account with balance=0
+/// If an account is not registered in the chain yet,
+/// it is considered as an account with `balance = 0`.
 pub fn balance(address: &Address) -> U256 {
 	unsafe { fetch_u256(|x| external::balance(address.as_ptr(), x) ) }
 }
@@ -228,7 +229,9 @@ pub fn call_code(gas: u64, address: &Address, input: &[u8], result: &mut [u8]) -
 	}
 }
 
-/// Like [`call`], but this call and any of it's subcalls are disallowed to modify any storage (will return `Err(Error)` in this case)
+/// Like [`call`], but this call and any of it's subcalls are disallowed to modify any storage.
+/// 
+/// It will return an error in this case.
 ///
 /// [`call`]: fn.call.html
 pub fn static_call(gas: u64, address: &Address, input: &[u8], result: &mut [u8]) -> Result<(), Error> {
