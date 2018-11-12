@@ -2,10 +2,8 @@
 
 use pwasm_std::{
 	self,
-	types::{H160, H256, U256}
+	types::{H256, U256, Address}
 };
-
-type Address = H160;
 
 /// Generic wasm error
 #[derive(Debug)]
