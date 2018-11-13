@@ -1,8 +1,9 @@
 //! Safe wrapper around externalities invokes.
 
-use hash::{H256, Address};
-use uint::U256;
-use pwasm_std;
+use pwasm_std::{
+	self,
+	types::{H256, U256, Address}
+};
 
 /// Generic wasm error
 #[derive(Debug)]
@@ -106,16 +107,17 @@ mod external {
 	}
 }
 
-/// Halt execution and register account for deletion
+/// Halt execution and register account for deletion.
 ///
 /// Value of the current account will be tranfered to `refund` address.
 pub fn suicide(refund: &Address) -> ! {
 	unsafe { external::suicide(refund.as_ptr()); }
 }
 
-/// Get balance of the given account
+/// Get balance of the given account.
 ///
-/// If an account is not registered in the chain yet, it is considered as an account with balance=0
+/// If an account is not registered in the chain yet,
+/// it is considered as an account with `balance = 0`.
 pub fn balance(address: &Address) -> U256 {
 	unsafe { fetch_u256(|x| external::balance(address.as_ptr(), x) ) }
 }
@@ -130,9 +132,14 @@ pub fn balance(address: &Address) -> U256 {
 pub fn create(endowment: U256, code: &[u8]) -> Result<Address, Error> {
 	let mut endowment_arr = [0u8; 32];
 	endowment.to_big_endian(&mut endowment_arr);
-	let mut result = Address::new();
+	let mut result = Address::zero();
 	unsafe {
-		if external::create(endowment_arr.as_ptr(), code.as_ptr(), code.len() as u32, (&mut result).as_mut_ptr()) == 0 {
+		if external::create(
+			endowment_arr.as_ptr(),
+			code.as_ptr(),
+			code.len() as u32,
+			(&mut result).as_mut_ptr()
+		) == 0 {
 			Ok(result)
 		} else {
 			Err(Error)
@@ -153,7 +160,13 @@ pub fn create2(endowment: U256, salt: H256, code: &[u8]) -> Result<Address, Erro
 	endowment.to_big_endian(&mut endowment_arr);
 	let mut result = Address::new();
 	unsafe {
-		if external::create2(endowment_arr.as_ptr(), salt.as_ptr(), code.as_ptr(), code.len() as u32, (&mut result).as_mut_ptr()) == 0 {
+		if external::create2(
+			endowment_arr.as_ptr(),
+			salt.as_ptr(),
+			code.as_ptr(),
+			code.len() as u32,
+			(&mut result).as_mut_ptr()
+		) == 0 {
 			Ok(result)
 		} else {
 			Err(Error)
@@ -171,17 +184,24 @@ pub fn create2(endowment: U256, salt: H256, code: &[u8]) -> Result<Address, Erro
 /// * `result` - a mutable reference to be filled with a result data
 ///
 ///	# Returns:
+///
 /// Call is succeed if it returns `Result::Ok(())`
 /// If call returns `Result::Err(Error)` it means tha call was failed due to execution halting
-
 pub fn call(gas: u64, address: &Address, value: U256, input: &[u8], result: &mut [u8]) -> Result<(), Error> {
 	let mut value_arr = [0u8; 32];
 	value.to_big_endian(&mut value_arr);
 	unsafe {
-		match external::ccall(gas as i64, address.as_ptr(), value_arr.as_ptr(), input.as_ptr(), input.len() as u32,
-			result.as_mut_ptr(), result.len() as u32) {
-				0 => Ok(()),
-				_ => Err(Error),
+		if external::ccall(
+			gas as i64,
+			address.as_ptr(),
+			value_arr.as_ptr(),
+			input.as_ptr(),
+			input.len() as u32,
+			result.as_mut_ptr(), result.len() as u32
+		) == 0 {
+			Ok(())
+		} else {
+			Err(Error)
 		}
 	}
 }
@@ -194,21 +214,39 @@ pub fn call(gas: u64, address: &Address, value: U256, input: &[u8], result: &mut
 /// [`call`]: fn.call.html
 pub fn call_code(gas: u64, address: &Address, input: &[u8], result: &mut [u8]) -> Result<(), Error> {
 	unsafe {
-		match external::dcall(gas as i64, address.as_ptr(), input.as_ptr(), input.len() as u32, result.as_mut_ptr(), result.len() as u32) {
-			0 => Ok(()),
-			_ => Err(Error),
+		if external::dcall(
+			gas as i64,
+			address.as_ptr(),
+			input.as_ptr(),
+			input.len() as u32,
+			result.as_mut_ptr(),
+			result.len() as u32
+		) == 0 {
+			Ok(())
+		} else {
+			Err(Error)
 		}
 	}
 }
 
-/// Like [`call`], but this call and any of it's subcalls are disallowed to modify any storage (will return `Err(Error)` in this case)
+/// Like [`call`], but this call and any of it's subcalls are disallowed to modify any storage.
+/// 
+/// It will return an error in this case.
 ///
 /// [`call`]: fn.call.html
 pub fn static_call(gas: u64, address: &Address, input: &[u8], result: &mut [u8]) -> Result<(), Error> {
 	unsafe {
-		match external::scall(gas as i64, address.as_ptr(), input.as_ptr(), input.len() as u32, result.as_mut_ptr(), result.len() as u32) {
-			0 => Ok(()),
-			_ => Err(Error),
+		if external::scall(
+			gas as i64,
+			address.as_ptr(),
+			input.as_ptr(),
+			input.len() as u32,
+			result.as_mut_ptr(),
+			result.len() as u32
+		) == 0 {
+			Ok(())
+		} else {
+			Err(Error)
 		}
 	}
 }

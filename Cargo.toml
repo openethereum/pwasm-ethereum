@@ -1,6 +1,6 @@
 [package]
 name = "pwasm-ethereum"
-version = "0.7.0"
+version = "0.8.0"
 authors = ["NikVolf <nikvolf@gmail.com>"]
 license = "MIT/Apache-2.0"
 readme = "README.md"
@@ -11,26 +11,12 @@ description = "Externs library to interact with Ethereum-like network"
 keywords = ["wasm", "parity", "ethereum", "blockchain"]
 categories = ["no-std", "embedded"]
 
-[build-dependencies]
-parity-hash = { version = "1.2.2", default-features = false }
-
 [dependencies]
-pwasm-std = "0.10"
-
-[dependencies.uint]
-version = "0.3"
-default-features = false
-
-[dependencies.byteorder]
-version = "1"
-default-features = false
-
-[dependencies.parity-hash]
-version = "1.2.2"
-default-features = false
+pwasm-std = "0.13"
+byteorder = { version = "1", default-features = false }
 
 [features]
 default = []
 kip4 = []
 kip6 = []
-std = ["pwasm-std/std", "parity-hash/std", "uint/std", "byteorder/std"]
+std = ["pwasm-std/std", "byteorder/std"]
